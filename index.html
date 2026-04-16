@@ -43,7 +43,13 @@ body { background:var(--deep); color:var(--burgundy); font-family:'Jost',sans-se
   position:relative; width:320px; height:220px;
   margin:0 auto;
   transform:rotate(-3deg);
+  perspective:800px;
   filter:drop-shadow(0 15px 35px rgba(80,50,40,0.18)) drop-shadow(0 5px 15px rgba(80,50,40,0.1));
+  transition:transform 0.8s ease 0.8s, opacity 0.8s ease 0.8s;
+}
+.envelope.open {
+  transform:rotate(-3deg) scale(0.9);
+  opacity:0;
 }
 @media(min-width:500px){ .envelope{width:380px;height:260px;} }
 
@@ -75,7 +81,8 @@ body { background:var(--deep); color:var(--burgundy); font-family:'Jost',sans-se
   clip-path:polygon(0 0, 100% 0, 50% 75%);
   transform-origin:top center;
   z-index:5;
-  transition:transform 1s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease 0.8s;
+  transition:transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  backface-visibility:hidden;
 }
 .envelope-flap::after {
   content:''; position:absolute;
@@ -83,8 +90,7 @@ body { background:var(--deep); color:var(--burgundy); font-family:'Jost',sans-se
   background:linear-gradient(180deg, transparent, rgba(0,0,0,0.04));
 }
 .envelope.open .envelope-flap {
-  transform:rotateX(-180deg);
-  z-index:1;
+  transform:rotateX(180deg);
 }
 
 /* Wax seal */
@@ -132,38 +138,7 @@ body { background:var(--deep); color:var(--burgundy); font-family:'Jost',sans-se
 }
 @media(min-width:500px){ .seal-text{font-size:2rem;} }
 
-/* Card inside */
-.envelope-card {
-  position:absolute; left:8%; right:8%; bottom:15%;
-  height:60%;
-  background:linear-gradient(180deg, #fff 0%, #fdf9f6 100%);
-  border:1px solid rgba(196,144,138,0.2);
-  border-radius:3px;
-  z-index:1;
-  transform:translateY(0);
-  opacity:0;
-  transition:transform 1s cubic-bezier(0.16,1,0.3,1) 0.6s, opacity 0.4s ease 0.4s;
-  display:flex; align-items:center; justify-content:center;
-  box-shadow:0 2px 15px rgba(92,58,58,0.06);
-}
-.envelope.open .envelope-card {
-  transform:translateY(-180px);
-  opacity:1;
-}
-.envelope-card-inner { text-align:center; }
-.card-names {
-  font-family:'Cormorant Garamond',serif;
-  font-style:italic; font-size:2rem;
-  color:var(--burgundy); letter-spacing:0.05em;
-}
-@media(min-width:500px){ .card-names{font-size:2.4rem;} }
-.card-ampersand { color:var(--wine); margin:0 0.1em; }
-.card-subtitle {
-  font-family:'Jost',sans-serif; font-weight:200;
-  font-size:0.55rem; letter-spacing:0.5em;
-  text-transform:uppercase; color:var(--mauve);
-  margin-top:0.6rem;
-}
+/* Card hidden - envelope opens and fades */
 
 .envelope-tap-hint {
   font-family:'Jost',sans-serif; font-weight:200;
@@ -383,12 +358,6 @@ footer::before { content:''; position:absolute; top:0; left:50%; width:400px; he
   <div class="envelope-container">
     <div class="envelope">
       <div class="envelope-back"></div>
-      <div class="envelope-card">
-        <div class="envelope-card-inner">
-          <p class="card-names">A <span class="card-ampersand">&amp;</span> C</p>
-          <p class="card-subtitle">You're Invited</p>
-        </div>
-      </div>
       <div class="envelope-front"></div>
       <div class="envelope-flap"></div>
       <div class="wax-seal">
@@ -557,7 +526,7 @@ function openEnvelope(){
   setTimeout(()=>{
     envelopeOverlay.classList.add('gone');
     showVideo();
-  },1800);
+  },2000);
 }
 envelopeOverlay.addEventListener('click',openEnvelope);
 setTimeout(()=>{if(!envelopeOpened)openEnvelope();},10000);
