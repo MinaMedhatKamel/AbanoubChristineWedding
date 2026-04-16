@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__Claude_Preview__preview_start",
+      "Bash(ls /Users/minatmedhat/Downloads/wedding/photo*)",
+      "Bash(firebase --version)",
+      "Bash(brew list:*)",
+      "Bash(brew install:*)",
+      "Bash(ffmpeg -i \"/Users/minatmedhat/Downloads/a_cinematic_9-16_portrait_ultra-realistic_luxury_wedding_intro_video_start_with_a_perfectly_centere_nwjgx5csoclyx16k9919_1.mp4\" -vf \"fps=1\" -q:v 2 \"/Users/minatmedhat/Downloads/wedding/frame_%02d.jpg\")"
+    ]
+  }
+}
