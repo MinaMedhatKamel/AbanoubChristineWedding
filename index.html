@@ -164,22 +164,7 @@ body { background:var(--deep); color:var(--burgundy); font-family:'Jost',sans-se
   object-fit:contain;
   background:#000;
 }
-#video-skip {
-  position:absolute; bottom:2.5rem; left:50%; transform:translateX(-50%);
-  display:flex; align-items:center; gap:0.5rem;
-  background:rgba(0,0,0,0.7);
-  backdrop-filter:blur(10px);
-  border:1px solid rgba(0,0,0,0.8);
-  color:#fff;
-  font-family:'Jost',sans-serif; font-weight:200;
-  font-size:0.6rem; letter-spacing:0.4em;
-  text-transform:uppercase;
-  padding:0.8rem 2rem;
-  cursor:pointer;
-  opacity:0; animation:fadeIn 0.5s ease forwards 1.5s;
-  transition:background 0.3s, border-color 0.3s;
-}
-#video-skip:hover { background:rgba(0,0,0,0.9); border-color:rgba(0,0,0,1); }
+#video-overlay { cursor:pointer; }
 
 /* PETALS */
 #petals-canvas { position:fixed; inset:0; pointer-events:none; z-index:1; }
@@ -374,17 +359,16 @@ footer::before { content:''; position:absolute; top:0; left:50%; width:400px; he
   <video id="wedding-video" playsinline muted loop>
     <source src="wedding-video.mp4" type="video/mp4">
   </video>
-  <button id="video-skip" aria-label="Skip to invitation">
-    <span>View Invitation</span>
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 18l6-6-6-6"/></svg>
-  </button>
 </div>
+
+<audio id="bg-music" loop preload="auto">
+  <source src="bg-music.mp3" type="audio/mpeg">
+</audio>
 
 <canvas id="petals-canvas"></canvas>
 
 <nav>
   <a href="#details">Details</a>
-  <a href="#gallery">Gallery</a>
 </nav>
 
 <!-- HERO -->
@@ -468,20 +452,6 @@ footer::before { content:''; position:absolute; top:0; left:50%; width:400px; he
 </section>
 
 
-<!-- GALLERY -->
-<section id="gallery">
-  <div class="section-inner">
-    <p class="section-label reveal">Moments Together</p>
-    <h2 class="section-title reveal">Our Gallery</h2>
-  </div>
-  <div class="photo-grid reveal">
-    <div class="photo-cell"><img src="photo_1.jpeg" alt="Abanob & Christine"></div>
-    <div class="photo-cell"><img src="photo_2.jpeg" alt="Abanob & Christine"></div>
-    <div class="photo-cell"><img src="photo_3.jpeg" alt="Abanob & Christine"></div>
-    <div class="photo-cell"><img src="photo_4.jpeg" alt="Abanob & Christine"></div>
-    <div class="photo-cell"><img src="photo_5.jpeg" alt="Abanob & Christine"></div>
-  </div>
-</section>
 
 
 <footer>
@@ -508,14 +478,21 @@ const envelopeOverlay=document.getElementById('envelope-overlay');
 const envelope=envelopeOverlay.querySelector('.envelope');
 const videoOverlay=document.getElementById('video-overlay');
 const video=document.getElementById('wedding-video');
-const videoSkip=document.getElementById('video-skip');
+const bgMusic=document.getElementById('bg-music');
 let envelopeOpened=false;
+let videoDismissed=false;
 
+function startMusic(){
+  if(bgMusic&&bgMusic.paused){bgMusic.volume=0;bgMusic.play().catch(()=>{});let v=0;const fi=setInterval(()=>{v+=0.05;if(v>=0.6){clearInterval(fi);bgMusic.volume=0.6;}else{bgMusic.volume=v;}},150);}
+}
 function showVideo(){
   videoOverlay.classList.add('active');
   video.play().catch(()=>{});
+  setTimeout(()=>{if(!videoDismissed)dismissVideo();},15000);
 }
 function dismissVideo(){
+  if(videoDismissed)return;
+  videoDismissed=true;
   videoOverlay.classList.add('gone');
   video.pause();
 }
@@ -523,6 +500,7 @@ function openEnvelope(){
   if(envelopeOpened)return;
   envelopeOpened=true;
   envelope.classList.add('open');
+  startMusic();
   setTimeout(()=>{
     envelopeOverlay.classList.add('gone');
     showVideo();
@@ -530,7 +508,7 @@ function openEnvelope(){
 }
 envelopeOverlay.addEventListener('click',openEnvelope);
 setTimeout(()=>{if(!envelopeOpened)openEnvelope();},10000);
-videoSkip.addEventListener('click',dismissVideo);
+videoOverlay.addEventListener('click',dismissVideo);
 
 /* NAME LETTERS */
 function animateLetters(id,text,base,per){
